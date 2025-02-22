@@ -8,7 +8,8 @@
 			"extensions": [
 				"ms-vscode.cpptools",
 				"ms-vscode.cpptools-extension-pack",
-				"twxs.cmake"
+				"twxs.cmake",
+				"tintinweb.graphviz-interactive-preview"
 			]
 		}
 	}
