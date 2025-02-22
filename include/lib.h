@@ -6,4 +6,3 @@ namespace lib {
 		return a + b;
 	}
 }
-

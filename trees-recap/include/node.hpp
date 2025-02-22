@@ -1,8 +1,6 @@
 #ifndef _NODE_H
 #define _NODE_H
 
-#include <concepts>
-
 template <std::integral K>
 class Node {
 
