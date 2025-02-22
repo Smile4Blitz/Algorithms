@@ -27,10 +27,29 @@ public:
         delete root;
     }
 
-    friend std::ostream &operator<<(std::ostream &out, const Tree &tree)
+    friend std::ostream &operator<<(std::ostream &out, const Tree<K> &tree)
     {
-        out << "TODO";
+        out << "digraph {\n";
+        tree.digraph(out, tree.root);
+        out << "}";
         return out;
+    }
+
+    void digraph(std::ostream &out, const Node<K> *p) const
+    {
+        if (p == nullptr)
+            return;
+
+        if (p->leftChild != nullptr)
+        {
+            out << p->key << " -> " << p->leftChild->key << "\n";
+        }
+        if (p->rightChild != nullptr)
+        {
+            out << p->key << " -> " << p->rightChild->key << "\n";
+        }
+        digraph(out, p->leftChild);
+        digraph(out, p->rightChild);
     }
 
     void add(K key)
@@ -145,9 +164,12 @@ public:
         {
             // key to delete is leaf node
             toDelete = p;
-            if(p_parent->leftChild == p) {
+            if (p_parent->leftChild == p)
+            {
                 p_parent->leftChild == nullptr;
-            } else {
+            }
+            else
+            {
                 p_parent->rightChild == nullptr;
             }
         }
@@ -160,33 +182,20 @@ public:
     template <traversal_order _o>
     void traverse(const std::function<void(const Node<K> *)> &fun) const
     {
+        return;
     }
 
     std::vector<K> range(K low, K high) const
     {
-        // TODO
+        return {};
     }
 
 private:
-    // void add(Node<K> **target, K key)
-    // {
-    //     // TODO
-    // }
-
-    // void remove(Node<K> **target, K key)
-    // {
-    //     // TODO
-    // }
-
-    // Node<K> *find(Node<K> *target, K key)
-    // {
-    //     // TODO
-    // }
-
-    // void range(const Node<K> *target, K low, K high, std::vector<K> &res) const
-    // {
-    //     // TODO
-    // }
+    void range(const Node<K> *target, K low, K high, std::vector<K> &res) const
+    {
+        // TODO
+        return;
+    }
 };
 
 #endif
