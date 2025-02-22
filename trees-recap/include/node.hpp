@@ -2,21 +2,21 @@
 #define _NODE_H
 
 template <std::integral K>
-class Node {
+class Node
+{
 
 public:
-
     K key;
-    Node* leftChild = nullptr;
-    Node* rightChild = nullptr;
+    Node *leftChild = nullptr;
+    Node *rightChild = nullptr;
 
     Node(K _key) : key(_key) {}
 
-    ~Node(){
+    ~Node()
+    {
         delete leftChild;
         delete rightChild;
     }
-
 };
 
 #endif

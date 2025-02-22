@@ -6,12 +6,6 @@
 int main() {
     Tree<int> tree;
 
-    /*
-
-    Uncomment when implemented.
-
-    // ---
-
     tree.add(9);
     tree.add(5);
     tree.add(14);
@@ -57,8 +51,6 @@ int main() {
         std::cout << val << " ";
     }
     std::cout << "]" << std::endl;
-
-    */
 
 	return 0;
 }
