@@ -36,15 +36,14 @@ public:
     void add(K key)
     {
         if (!root)
-        { // If the tree is empty, create root
+        {
             root = new Node<K>(key);
             return;
         }
 
         Node<K> *p = root;
-        Node<K> *parent = nullptr; // To track the parent node
+        Node<K> *parent = nullptr;
 
-        // Traverse to the correct insertion point
         while (p != nullptr)
         {
             parent = p;
@@ -60,18 +59,51 @@ public:
 
     Node<K> *find(K key)
     {
-        // TODO
+        Node<K> *p = root;
+
+        while(p != nullptr && p->key != key) {
+            p = (key <= p->key) ? p->leftChild : p->rightChild;
+        }
+
+        return p;
     }
 
     void remove(K key)
     {
-        // TODO
+        Node<K> *p = root;
+
+        while(p != nullptr && p->key != key) {
+            p = (key <= p->key) ? p->leftChild : p->rightChild;
+        }
+
+        if(p == nullptr)
+            return;
+
+        if(p->leftChild != nullptr) {
+            // find largest node in left subtree
+            Node<K> *left_subtree_largest_node = p->leftChild;
+
+            while(left_subtree_largest_node->rightChild->rightChild != nullptr)
+                left_subtree_largest_node = left_subtree_largest_node->rightChild;
+
+            // use value of largest left node as new value for delete node
+            p->key = left_subtree_largest_node->rightChild->key;
+            Node<K> *toDelete = left_subtree_largest_node->rightChild;
+
+            // if largest left node had left child, move that left child to left largest node old position
+            if(left_subtree_largest_node->rightChild->leftChild != nullptr) {
+                left_subtree_largest_node->rightChild = left_subtree_largest_node->rightChild->leftChild;
+            }
+
+            toDelete->leftChild == nullptr;
+            delete toDelete;
+        }
     }
 
     template <traversal_order _o>
     void traverse(const std::function<void(const Node<K> *)> &fun) const
     {
-        // TODO
+        
     }
 
     std::vector<K> range(K low, K high) const
@@ -80,25 +112,25 @@ public:
     }
 
 private:
-    void add(Node<K> **target, K key)
-    {
-        // TODO
-    }
+    // void add(Node<K> **target, K key)
+    // {
+    //     // TODO
+    // }
 
-    void remove(Node<K> **target, K key)
-    {
-        // TODO
-    }
+    // void remove(Node<K> **target, K key)
+    // {
+    //     // TODO
+    // }
 
-    Node<K> *find(Node<K> *target, K key)
-    {
-        // TODO
-    }
+    // Node<K> *find(Node<K> *target, K key)
+    // {
+    //     // TODO
+    // }
 
-    void range(const Node<K> *target, K low, K high, std::vector<K> &res) const
-    {
-        // TODO
-    }
+    // void range(const Node<K> *target, K low, K high, std::vector<K> &res) const
+    // {
+    //     // TODO
+    // }
 };
 
 #endif
