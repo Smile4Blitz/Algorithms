@@ -186,13 +186,11 @@ public:
         {
             traverse_in_order(root, fun);
         }
-
-        if (_o == preorder)
+        else if (_o == preorder)
         {
             traverse_pre_order(root, fun);
         }
-
-        if (_o == postorder)
+        else
         {
             traverse_post_order(root, fun);
         }
