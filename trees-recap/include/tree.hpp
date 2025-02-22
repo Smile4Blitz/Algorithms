@@ -35,7 +35,7 @@ public:
 
     void add(K key)
     {
-        if (!root)
+        if (root == nullptr)
         {
             root = new Node<K>(key);
             return;
@@ -61,7 +61,8 @@ public:
     {
         Node<K> *p = root;
 
-        while(p != nullptr && p->key != key) {
+        while (p != nullptr && p->key != key)
+        {
             p = (key <= p->key) ? p->leftChild : p->rightChild;
         }
 
@@ -71,39 +72,94 @@ public:
     void remove(K key)
     {
         Node<K> *p = root;
+        Node<K> *p_parent = p;
+        Node<K> *toDelete = nullptr;
 
-        while(p != nullptr && p->key != key) {
+        while (p != nullptr && p->key != key)
+        {
+            p_parent = p;
             p = (key <= p->key) ? p->leftChild : p->rightChild;
         }
 
-        if(p == nullptr)
+        // key not in tree
+        if (p == nullptr)
+        {
             return;
+        }
 
-        if(p->leftChild != nullptr) {
+        // delete by replacement
+        if (p->leftChild != nullptr)
+        {
             // find largest node in left subtree
-            Node<K> *left_subtree_largest_node = p->leftChild;
+            Node<K> *node_parent = p;
+            Node<K> *node = p->leftChild;
 
-            while(left_subtree_largest_node->rightChild->rightChild != nullptr)
-                left_subtree_largest_node = left_subtree_largest_node->rightChild;
-
-            // use value of largest left node as new value for delete node
-            p->key = left_subtree_largest_node->rightChild->key;
-            Node<K> *toDelete = left_subtree_largest_node->rightChild;
-
-            // if largest left node had left child, move that left child to left largest node old position
-            if(left_subtree_largest_node->rightChild->leftChild != nullptr) {
-                left_subtree_largest_node->rightChild = left_subtree_largest_node->rightChild->leftChild;
+            while (node->rightChild != nullptr)
+            {
+                node_parent = node;
+                node = node->rightChild;
             }
 
-            toDelete->leftChild == nullptr;
-            delete toDelete;
+            // replace deleted key value with largest node from left subtree
+            p->key = node->key;
+            toDelete = node;
+
+            // if largest node in left subtree has a left child, have it take the largest node pos
+            if (node_parent != p)
+            {
+                node_parent->rightChild = (node->leftChild != nullptr) ? node->leftChild : nullptr;
+            }
+            else
+            {
+                node_parent->leftChild = (node->leftChild != nullptr) ? node->leftChild : nullptr;
+            }
         }
+        else if (p->rightChild != nullptr)
+        {
+            // find smallest node in right tree
+            Node<K> *node_parent = p;
+            Node<K> *node = p->rightChild;
+
+            while (node->leftChild != nullptr)
+            {
+                node_parent = node;
+                node = node->leftChild;
+            }
+
+            // replace deleted key value with smallest node from right subtree
+            p->key = node->key;
+            toDelete = node;
+
+            if (node_parent != p)
+            {
+                node_parent->leftChild = (node->rightChild != nullptr) ? node->rightChild : nullptr;
+            }
+            else
+            {
+                node_parent->rightChild = (node->rightChild != nullptr) ? node->rightChild : nullptr;
+            }
+            // if smallest node in right subtree has a right child, have it take the smallest node pos
+            node_parent->leftChild = (node->rightChild != nullptr) ? node->rightChild : nullptr;
+        }
+        else
+        {
+            // key to delete is leaf node
+            toDelete = p;
+            if(p_parent->leftChild == p) {
+                p_parent->leftChild == nullptr;
+            } else {
+                p_parent->rightChild == nullptr;
+            }
+        }
+
+        toDelete->leftChild = nullptr;
+        toDelete->rightChild = nullptr;
+        delete toDelete;
     }
 
     template <traversal_order _o>
     void traverse(const std::function<void(const Node<K> *)> &fun) const
     {
-        
     }
 
     std::vector<K> range(K low, K high) const
