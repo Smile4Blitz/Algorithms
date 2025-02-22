@@ -182,7 +182,20 @@ public:
     template <traversal_order _o>
     void traverse(const std::function<void(const Node<K> *)> &fun) const
     {
-        return;
+        if (_o == inorder)
+        {
+            traverse_in_order(root, fun);
+        }
+
+        if (_o == preorder)
+        {
+            traverse_pre_order(root, fun);
+        }
+
+        if (_o == postorder)
+        {
+            traverse_post_order(root, fun);
+        }
     }
 
     std::vector<K> range(K low, K high) const
@@ -193,6 +206,46 @@ public:
     }
 
 private:
+    void traverse_in_order(const Node<K> *p, const std::function<void(const Node<K> *)> &fun) const
+    {
+        if (p == nullptr)
+            return;
+
+        if (p->leftChild != nullptr)
+            traverse_in_order(p->leftChild, fun);
+
+        fun(p);
+
+        if (p->rightChild != nullptr)
+            traverse_in_order(p->rightChild, fun);
+    }
+    void traverse_pre_order(const Node<K> *p, const std::function<void(const Node<K> *)> &fun) const
+    {
+        if (p == nullptr)
+            return;
+
+        fun(p);
+
+        if (p->leftChild != nullptr)
+            traverse_pre_order(p->leftChild, fun);
+
+        if (p->rightChild != nullptr)
+            traverse_pre_order(p->rightChild, fun);
+    }
+    void traverse_post_order(const Node<K> *p, const std::function<void(const Node<K> *)> &fun) const
+    {
+        if (p == nullptr)
+            return;
+
+        if (p->leftChild != nullptr)
+            traverse_post_order(p->leftChild, fun);
+
+        if (p->rightChild != nullptr)
+            traverse_post_order(p->rightChild, fun);
+
+        fun(p);
+    }
+
     void range(const Node<K> *target, const K &low, const K &high, std::vector<K> &res) const
     {
         if (target == nullptr)
