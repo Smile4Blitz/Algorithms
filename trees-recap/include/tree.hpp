@@ -187,14 +187,25 @@ public:
 
     std::vector<K> range(K low, K high) const
     {
-        return {};
+        std::vector<K> v;
+        range(root, low, high, v);
+        return v;
     }
 
 private:
-    void range(const Node<K> *target, K low, K high, std::vector<K> &res) const
+    void range(const Node<K> *target, const K &low, const K &high, std::vector<K> &res) const
     {
-        // TODO
-        return;
+        if (target == nullptr)
+            return;
+
+        if (target->key > low)
+            range(target->leftChild, low, high, res);
+
+        if (target->key >= low && target->key <= high)
+            res.push_back(target->key);
+
+        if (target->key < high)
+            range(target->rightChild, low, high, res);
     }
 };
 
