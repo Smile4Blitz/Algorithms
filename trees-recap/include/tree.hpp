@@ -17,6 +17,10 @@ public:
 
     Tree() {}
 
+    ~Tree() {
+        delete root;
+    }
+
     friend std::ostream& operator<<(std::ostream& out, const Tree& tree) {
         out << "TODO";
         return out;

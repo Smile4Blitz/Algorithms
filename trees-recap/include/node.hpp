@@ -12,6 +12,11 @@ public:
 
     Node(K _key) : key(_key) {}
 
+    ~Node(){
+        delete leftChild;
+        delete rightChild;
+    }
+
 };
 
 #endif
