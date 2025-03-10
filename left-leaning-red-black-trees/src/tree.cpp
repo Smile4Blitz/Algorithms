@@ -1,15 +1,61 @@
 #include "tree.h"
 
-Node *LeftLeaningRedBlackTree::rotateLeft(Node *node)
+Node *LeftLeaningRedBlackTree::rotateLeft(Node *x)
 {
-    // TODO
-    return nullptr;
+    if(x->rightChild == nullptr)
+        return x;
+    Node *y = x->rightChild;
+
+    x->rightChild = y->leftChild;
+    if (y->leftChild != nullptr)
+    {
+        y->leftChild->parent = x;
+    }
+    y->parent = x->parent;
+
+    if (y->parent == nullptr)
+    {
+        root = y;
+    }
+    else if (y->parent->leftChild == nullptr)
+    {
+        y->parent->leftChild = y;
+    }
+    else
+    {
+        y->parent->rightChild = y;
+    }
+
+    y->leftChild = x;
+    x->parent = y;
+
+    return y;
 }
 
-Node *LeftLeaningRedBlackTree::rotateRight(Node *node)
+Node *LeftLeaningRedBlackTree::rotateRight(Node *x)
 {
-    // TODO
-    return nullptr;
+    if(x->leftChild == nullptr)
+        return x;
+    Node *y = x->leftChild;
+
+    x->leftChild = y->rightChild;
+    if(x->leftChild != nullptr) {
+        x->leftChild->parent = x;
+    }
+
+    y->parent = x->parent;
+    if(y->parent == nullptr) {
+        root = y;
+    } else if (y->parent->leftChild == x) {
+        y->parent->leftChild = y;
+    } else {
+        y->parent->rightChild = y;
+    }
+
+    y->rightChild = x;
+    x->parent = y;
+
+    return y;
 }
 
 bool LeftLeaningRedBlackTree::isRed(Node *node)
