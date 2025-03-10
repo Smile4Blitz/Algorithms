@@ -19,7 +19,7 @@ bool LeftLeaningRedBlackTree::isRed(Node *node)
 
 void LeftLeaningRedBlackTree::colorFlip(Node *node)
 {
-    // TODO
+    node->color = this->invertColor(node->color);
 }
 
 COLOR LeftLeaningRedBlackTree::invertColor(COLOR color)
