@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "node.hpp"
+#include <concepts>
 
 enum traversal_order
 {
@@ -21,21 +22,167 @@ public:
     Node<K> *root = nullptr;
 
     Tree() {}
-
     ~Tree()
     {
         delete root;
     }
 
-    friend std::ostream &operator<<(std::ostream &out, const Tree<K> &tree)
+    friend std::ostream &operator<<(std::ostream &out, const Tree &tree)
     {
         out << "digraph {\n";
-        tree.digraph(out, tree.root);
+        tree.digraph(tree.root, out);
         out << "}";
         return out;
     }
 
-    void digraph(std::ostream &out, const Node<K> *p) const
+    void add(int k)
+    {
+        addNode(k);
+    }
+
+    template <traversal_order _o>
+    void traverse(const std::function<void(const Node<K> *)> &fun) const
+    {
+        switch (_o)
+        {
+        case preorder:
+            traverse_preorder(root, fun);
+            break;
+        case inorder:
+            traverse_inorder(root, fun);
+            break;
+        default:
+            traverse_postorder(root, fun);
+        }
+    }
+
+    void remove(int k)
+    {
+        Node<K> *parent = root;
+        Node<K> *node = root;
+
+        while (node != nullptr && node->key != k)
+        {
+            parent = node;
+            node = k <= node->key ? node->leftChild : node->rightChild;
+        }
+
+        if (node == nullptr)
+        {
+            return;
+        }
+        else if (node->leftChild == nullptr && node->rightChild == nullptr)
+        {
+            if (parent->leftChild == node)
+            {
+                parent->leftChild = nullptr;
+            }
+            else
+            {
+                parent->rightChild = nullptr;
+            }
+        }
+        else if (node->rightChild == nullptr)
+        {
+            if (parent->rightChild == node)
+            {
+                parent->rightChild = node->leftChild;
+            }
+            else
+            {
+                parent->leftChild = node->leftChild;
+            }
+        }
+        else if (node->leftChild == nullptr)
+        {
+            if (parent->leftChild == node)
+            {
+                parent->leftChild = node->rightChild;
+            }
+            else
+            {
+                parent->rightChild = node->rightChild;
+            }
+        }
+        else
+        {
+            Node<K> *l_parent = node;
+            Node<K> *l_node = node->leftChild;
+
+            while (l_node->rightChild != nullptr)
+            {
+                l_parent = l_node;
+                l_node = l_node->rightChild;
+            }
+
+            node->key = l_node->key;
+            if (l_parent == node)
+            {
+                l_parent->leftChild = l_node->leftChild;
+            }
+            else
+            {
+                l_parent->rightChild = l_node->leftChild;
+            }
+            node = l_node;
+        }
+
+        node->leftChild = nullptr;
+        node->rightChild = nullptr;
+        delete node;
+    };
+
+    Node<int> *find(int k) const
+    {
+        Node<K> *p = root;
+        while (p != nullptr && k != p->key)
+            p = k < p->key ? p->leftChild : p->rightChild;
+        return p;
+    };
+
+    std::vector<K> range(const int &a, const int &b) const
+    {
+        std::vector<K> v;
+        Node<K> *p = root;
+        range(a, b, p, v);
+        return v;
+    };
+
+private:
+    void deleteTree(Node<K> *p)
+    {
+        if (p == nullptr)
+            return;
+        deleteTree(p->leftChild);
+        deleteTree(p->rightChild);
+        delete p;
+    }
+
+    void addNode(int key)
+    {
+        Node<K> *parent = root;
+        Node<K> *node = root;
+
+        while (node != nullptr)
+            if (key <= node->key)
+            {
+                parent = node;
+                node = node->leftChild;
+            }
+            else
+            {
+                parent = node;
+                node = node->rightChild;
+            }
+
+        node = new Node<K>(K(key));
+        if (parent != nullptr)
+            key <= parent->key ? parent->leftChild = node : parent->rightChild = node;
+        else
+            root = node;
+    }
+
+    void digraph(const Node<K> *p, std::ostream &out) const
     {
         if (p == nullptr)
             return;
@@ -48,215 +195,49 @@ public:
         {
             out << p->key << " -> " << p->rightChild->key << "\n";
         }
-        digraph(out, p->leftChild);
-        digraph(out, p->rightChild);
+
+        digraph(p->leftChild, out);
+        digraph(p->rightChild, out);
     }
 
-    void add(K key)
-    {
-        if (root == nullptr)
-        {
-            root = new Node<K>(key);
-            return;
-        }
-
-        Node<K> *p = root;
-        Node<K> *parent = nullptr;
-
-        while (p != nullptr)
-        {
-            parent = p;
-            p = (key <= p->key) ? p->leftChild : p->rightChild;
-        }
-
-        // Insert the new node as a child of the found parent
-        if (key <= parent->key)
-            parent->leftChild = new Node<K>(key);
-        else
-            parent->rightChild = new Node<K>(key);
-    }
-
-    Node<K> *find(K key)
-    {
-        Node<K> *p = root;
-
-        while (p != nullptr && p->key != key)
-        {
-            p = (key <= p->key) ? p->leftChild : p->rightChild;
-        }
-
-        return p;
-    }
-
-    void remove(K key)
-    {
-        Node<K> *p = root;
-        Node<K> *p_parent = p;
-        Node<K> *toDelete = nullptr;
-
-        while (p != nullptr && p->key != key)
-        {
-            p_parent = p;
-            p = (key <= p->key) ? p->leftChild : p->rightChild;
-        }
-
-        // key not in tree
-        if (p == nullptr)
-        {
-            return;
-        }
-
-        // delete by replacement
-        if (p->leftChild != nullptr)
-        {
-            // find largest node in left subtree
-            Node<K> *node_parent = p;
-            Node<K> *node = p->leftChild;
-
-            while (node->rightChild != nullptr)
-            {
-                node_parent = node;
-                node = node->rightChild;
-            }
-
-            // replace deleted key value with largest node from left subtree
-            p->key = node->key;
-            toDelete = node;
-
-            // if largest node in left subtree has a left child, have it take the largest node pos
-            if (node_parent != p)
-            {
-                node_parent->rightChild = (node->leftChild != nullptr) ? node->leftChild : nullptr;
-            }
-            else
-            {
-                node_parent->leftChild = (node->leftChild != nullptr) ? node->leftChild : nullptr;
-            }
-        }
-        else if (p->rightChild != nullptr)
-        {
-            // find smallest node in right tree
-            Node<K> *node_parent = p;
-            Node<K> *node = p->rightChild;
-
-            while (node->leftChild != nullptr)
-            {
-                node_parent = node;
-                node = node->leftChild;
-            }
-
-            // replace deleted key value with smallest node from right subtree
-            p->key = node->key;
-            toDelete = node;
-
-            if (node_parent != p)
-            {
-                node_parent->leftChild = (node->rightChild != nullptr) ? node->rightChild : nullptr;
-            }
-            else
-            {
-                node_parent->rightChild = (node->rightChild != nullptr) ? node->rightChild : nullptr;
-            }
-            // if smallest node in right subtree has a right child, have it take the smallest node pos
-            node_parent->leftChild = (node->rightChild != nullptr) ? node->rightChild : nullptr;
-        }
-        else
-        {
-            // key to delete is leaf node
-            toDelete = p;
-            if (p_parent->leftChild == p)
-            {
-                p_parent->leftChild == nullptr;
-            }
-            else
-            {
-                p_parent->rightChild == nullptr;
-            }
-        }
-
-        toDelete->leftChild = nullptr;
-        toDelete->rightChild = nullptr;
-        delete toDelete;
-    }
-
-    template <traversal_order _o>
-    void traverse(const std::function<void(const Node<K> *)> &fun) const
-    {
-        if (_o == inorder)
-        {
-            traverse_in_order(root, fun);
-        }
-        else if (_o == preorder)
-        {
-            traverse_pre_order(root, fun);
-        }
-        else
-        {
-            traverse_post_order(root, fun);
-        }
-    }
-
-    std::vector<K> range(K low, K high) const
-    {
-        std::vector<K> v;
-        range(root, low, high, v);
-        return v;
-    }
-
-private:
-    void traverse_in_order(const Node<K> *p, const std::function<void(const Node<K> *)> &fun) const
+    void range(const int &a, const int &b, Node<K> *p, std::vector<K> &v) const
     {
         if (p == nullptr)
             return;
 
-        if (p->leftChild != nullptr)
-            traverse_in_order(p->leftChild, fun);
+        if (p->leftChild != nullptr && p->leftChild->key >= a && p->leftChild->key <= b)
+            range(a, b, p->leftChild, v);
+        if (p->key >= a && p->key <= b)
+            v.push_back(p->key);
+        if (p->rightChild != nullptr && p->rightChild->key >= a && p->rightChild->key <= b)
+            range(a, b, p->rightChild, v);
+    }
 
+    void traverse_preorder(const Node<K> *p, const std::function<void(const Node<K> *)> &fun) const
+    {
+        if (p == nullptr)
+            return;
         fun(p);
-
-        if (p->rightChild != nullptr)
-            traverse_in_order(p->rightChild, fun);
+        traverse_preorder(p->leftChild, fun);
+        traverse_preorder(p->rightChild, fun);
     }
-    void traverse_pre_order(const Node<K> *p, const std::function<void(const Node<K> *)> &fun) const
+
+    void traverse_inorder(const Node<K> *p, const std::function<void(const Node<K> *)> &fun) const
     {
         if (p == nullptr)
             return;
-
+        traverse_inorder(p->leftChild, fun);
         fun(p);
-
-        if (p->leftChild != nullptr)
-            traverse_pre_order(p->leftChild, fun);
-
-        if (p->rightChild != nullptr)
-            traverse_pre_order(p->rightChild, fun);
+        traverse_inorder(p->rightChild, fun);
     }
-    void traverse_post_order(const Node<K> *p, const std::function<void(const Node<K> *)> &fun) const
+
+    void traverse_postorder(const Node<K> *p, const std::function<void(const Node<K> *)> &fun) const
     {
         if (p == nullptr)
             return;
-
-        if (p->leftChild != nullptr)
-            traverse_post_order(p->leftChild, fun);
-
-        if (p->rightChild != nullptr)
-            traverse_post_order(p->rightChild, fun);
-
+        traverse_postorder(p->leftChild, fun);
+        traverse_postorder(p->rightChild, fun);
         fun(p);
-    }
-
-    void range(const Node<K> *target, const K &low, const K &high, std::vector<K> &res) const
-    {
-        if (target == nullptr)
-            return;
-
-        if (target->key > low)
-            range(target->leftChild, low, high, res);
-
-        if (target->key >= low && target->key <= high)
-            res.push_back(target->key);
-
-        if (target->key < high)
-            range(target->rightChild, low, high, res);
     }
 };
 

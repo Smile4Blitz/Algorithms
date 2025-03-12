@@ -19,6 +19,7 @@ int main()
     full_tree << tree;
 
     tree.remove(14);
+    tree.remove(9);
 
     std::ofstream after_deletion("after_deletion.dot");
     after_deletion << tree;
