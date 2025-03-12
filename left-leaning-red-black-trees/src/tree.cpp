@@ -2,79 +2,27 @@
 
 Node *LeftLeaningRedBlackTree::rotateLeft(Node *x)
 {
-    if(x->rightChild == nullptr)
-        return x;
-    Node *y = x->rightChild;
-
-    x->rightChild = y->leftChild;
-    if (y->leftChild != nullptr)
-    {
-        y->leftChild->parent = x;
-    }
-    y->parent = x->parent;
-
-    if (y->parent == nullptr)
-    {
-        root = y;
-    }
-    else if (y->parent->leftChild == nullptr)
-    {
-        y->parent->leftChild = y;
-    }
-    else
-    {
-        y->parent->rightChild = y;
-    }
-
-    y->leftChild = x;
-    x->parent = y;
-
-    return y;
+    // TODO
 }
 
 Node *LeftLeaningRedBlackTree::rotateRight(Node *x)
 {
-    if(x->leftChild == nullptr)
-        return x;
-    Node *y = x->leftChild;
-
-    x->leftChild = y->rightChild;
-    if(x->leftChild != nullptr) {
-        x->leftChild->parent = x;
-    }
-
-    y->parent = x->parent;
-    if(y->parent == nullptr) {
-        root = y;
-    } else if (y->parent->leftChild == x) {
-        y->parent->leftChild = y;
-    } else {
-        y->parent->rightChild = y;
-    }
-
-    y->rightChild = x;
-    x->parent = y;
-
-    return y;
+    // TODO    
 }
 
 bool LeftLeaningRedBlackTree::isRed(Node *node)
 {
-    return node && (node->color == COLOR::RED);
+    // TODO
 }
 
 void LeftLeaningRedBlackTree::colorFlip(Node *node)
 {
-    node->color = this->invertColor(node->color);
+    // TODO
 }
 
 COLOR LeftLeaningRedBlackTree::invertColor(COLOR color)
 {
-    if (color == COLOR::BLACK)
-    {
-        return COLOR::RED;
-    }
-    return COLOR::BLACK;
+    // TODO
 }
 
 void LeftLeaningRedBlackTree::drawDotTree(const char *filename)
