@@ -21,6 +21,8 @@ enable_testing()
 add_subdirectory(test)
 
 # Voeg labo-folders toe
-add_subdirectory(red-black-trees)
-# add_subdirectory(binary-search-trees)
+# add_subdirectory("binary-search-trees")
 # add_subdirectory(left-leaning-red-black-trees)
+# add_subdirectory(red-black-trees)
+# add_subdirectory(color-quantization)
+add_subdirectory("decrease-and-conquer")
